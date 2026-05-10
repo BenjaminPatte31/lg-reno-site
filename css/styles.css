@@ -232,3 +232,39 @@ ul{list-style:none}
   .footer-bottom{flex-direction:column;gap:8px;text-align:center}
   .floating-cta span:not(.phone-icon){display:none}.floating-cta{padding:16px;border-radius:50%}
 }
+
+/* ── PREMIUM FEATURES ── */
+
+/* Slider Animation */
+.ba-slider.ba-hint {
+  transform: translateX(30px);
+  transition: transform 0.8s ease-in-out;
+}
+.ba-after.ba-hint-clip {
+  clip-path: inset(0 0 0 calc(50% + 30px)) !important;
+  transition: clip-path 0.8s ease-in-out;
+}
+
+/* FAQ Accordion */
+.faq-section { padding: 80px 0; background: var(--bg-main); }
+.faq-list { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+.faq-item { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; transition: var(--transition); }
+.faq-item:hover { border-color: var(--primary-light); box-shadow: var(--shadow-sm); }
+.faq-question { width: 100%; text-align: left; background: none; border: none; padding: 24px; font-family: 'Space Grotesk', sans-serif; font-size: 1.1rem; font-weight: 600; color: var(--text-primary); cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+.faq-icon { width: 24px; height: 24px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; transition: var(--transition); font-size: 1.2rem; line-height: 1; }
+.faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s ease; background: var(--white); }
+.faq-answer-inner { padding: 0 24px 24px; color: var(--text-secondary); font-size: 0.95rem; line-height: 1.7; }
+.faq-item.open .faq-icon { transform: rotate(45deg); background: var(--primary); color: var(--white); }
+.faq-item.open .faq-answer { max-height: 500px; }
+
+/* Speed Dial */
+.speed-dial-container { position: fixed; bottom: 24px; right: 24px; z-index: 1000; display: flex; flex-direction: column; align-items: flex-end; gap: 16px; }
+.speed-dial-options { display: flex; flex-direction: column; gap: 12px; opacity: 0; visibility: hidden; transform: translateY(20px); transition: var(--transition); pointer-events: none; }
+.speed-dial-container.open .speed-dial-options { opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto; }
+.speed-action { display: flex; align-items: center; gap: 12px; background: var(--white); padding: 10px 20px; border-radius: 50px; color: var(--text-primary); font-weight: 600; font-size: 0.9rem; box-shadow: var(--shadow-md); transition: var(--transition); border: 1px solid var(--border); text-decoration: none; }
+.speed-action:hover { transform: scale(1.05); }
+.speed-action.whatsapp { color: #25D366; border-color: #25D366; background: #F0FFF4; }
+.speed-action.phone { color: var(--primary); border-color: var(--primary-light); }
+.speed-toggle { background: var(--primary); color: var(--white); width: 60px; height: 60px; border-radius: 50%; border: none; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-lg); cursor: pointer; transition: var(--transition); }
+.speed-toggle:hover { transform: scale(1.1); background: var(--primary-hover); }
+.speed-dial-container.open .speed-toggle { transform: rotate(45deg); background: var(--secondary); }

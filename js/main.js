@@ -1,6 +1,6 @@
 /* ============================================
-   LG RENO — Main JavaScript
-   Before/After Slider + Multi-Step Form + UI
+   LG RENO — Main JavaScript v2
+   Speed Dial · Slider Hint · FAQ · Multi-Step
    ============================================ */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const slider = container.querySelector('.ba-slider');
     const after = container.querySelector('.ba-after');
     let isDragging = false;
+    let hintPlayed = false;
 
     function updateSlider(x) {
       const rect = container.getBoundingClientRect();
@@ -42,6 +43,25 @@ document.addEventListener('DOMContentLoaded', () => {
       slider.style.left = pos + '%';
       after.style.clipPath = `inset(0 0 0 ${pos}%)`;
     }
+
+    // Hint animation — auto-slide on first view to show interactivity
+    const hintObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !hintPlayed) {
+          hintPlayed = true;
+          hintObserver.unobserve(container);
+          setTimeout(() => {
+            slider.classList.add('ba-hint');
+            after.classList.add('ba-hint-clip');
+            setTimeout(() => {
+              slider.classList.remove('ba-hint');
+              after.classList.remove('ba-hint-clip');
+            }, 1600);
+          }, 600);
+        }
+      });
+    }, { threshold: 0.5 });
+    hintObserver.observe(container);
 
     slider.addEventListener('mousedown', () => isDragging = true);
     container.addEventListener('mousedown', (e) => { isDragging = true; updateSlider(e.clientX); });
@@ -53,6 +73,31 @@ document.addEventListener('DOMContentLoaded', () => {
     container.addEventListener('touchstart', (e) => { isDragging = true; updateSlider(e.touches[0].clientX); });
     document.addEventListener('touchend', () => isDragging = false);
     document.addEventListener('touchmove', (e) => { if (isDragging) updateSlider(e.touches[0].clientX); });
+  });
+
+  // ── SPEED DIAL (Phone + WhatsApp) ──
+  const speedDial = document.getElementById('speedDial');
+  const speedToggle = document.getElementById('speedToggle');
+  if (speedDial && speedToggle) {
+    speedToggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      speedDial.classList.toggle('open');
+    });
+    // Close on outside click
+    document.addEventListener('click', (e) => {
+      if (!speedDial.contains(e.target)) speedDial.classList.remove('open');
+    });
+  }
+
+  // ── FAQ ACCORDIONS ──
+  document.querySelectorAll('.faq-question').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.closest('.faq-item');
+      const isOpen = item.classList.contains('open');
+      // Close all siblings
+      item.closest('.faq-list').querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    });
   });
 
   // ── MULTI-STEP QUOTE FORM ──
@@ -67,13 +112,11 @@ document.addEventListener('DOMContentLoaded', () => {
       quoteForm.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
       const step = quoteForm.querySelector(`.step[data-step="${n}"]`);
       if (step) step.classList.add('active');
-      // Update dots
       quoteForm.querySelectorAll('.step-dot').forEach((d, i) => {
         d.classList.toggle('active', i < n);
       });
     }
 
-    // Service selection (step 1)
     quoteForm.querySelectorAll('.option-btn[data-service]').forEach(btn => {
       btn.addEventListener('click', () => {
         quoteForm.querySelectorAll('.option-btn[data-service]').forEach(b => b.classList.remove('selected'));
@@ -82,7 +125,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    // Delay selection (step 2)
     quoteForm.querySelectorAll('.option-btn[data-delay]').forEach(btn => {
       btn.addEventListener('click', () => {
         quoteForm.querySelectorAll('.option-btn[data-delay]').forEach(b => b.classList.remove('selected'));
@@ -91,50 +133,28 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    // Navigation
     quoteForm.querySelectorAll('.btn-step-next').forEach(btn => {
       btn.addEventListener('click', () => {
-        if (currentStep === 1 && !selectedService) {
-          alert('Veuillez sélectionner un service.');
-          return;
-        }
-        if (currentStep === 2 && !selectedDelay) {
-          alert('Veuillez sélectionner un délai.');
-          return;
-        }
-        if (currentStep < totalSteps) {
-          currentStep++;
-          showStep(currentStep);
-        }
+        if (currentStep === 1 && !selectedService) { alert('Veuillez sélectionner un service.'); return; }
+        if (currentStep === 2 && !selectedDelay) { alert('Veuillez sélectionner un délai.'); return; }
+        if (currentStep < totalSteps) { currentStep++; showStep(currentStep); }
       });
     });
 
     quoteForm.querySelectorAll('.btn-step-back').forEach(btn => {
-      btn.addEventListener('click', () => {
-        if (currentStep > 1) {
-          currentStep--;
-          showStep(currentStep);
-        }
-      });
+      btn.addEventListener('click', () => { if (currentStep > 1) { currentStep--; showStep(currentStep); } });
     });
 
-    // Submit
     quoteForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const name = quoteForm.querySelector('#q-name')?.value;
       const phone = quoteForm.querySelector('#q-phone')?.value;
-      const city = quoteForm.querySelector('#q-city')?.value;
-      if (!name || !phone) {
-        alert('Veuillez remplir vos coordonnées.');
-        return;
-      }
-      // Populate hidden fields
+      if (!name || !phone) { alert('Veuillez remplir vos coordonnées.'); return; }
       const hiddenService = quoteForm.querySelector('input[name="service"]');
       const hiddenDelay = quoteForm.querySelector('input[name="delai"]');
       if (hiddenService) hiddenService.value = selectedService;
       if (hiddenDelay) hiddenDelay.value = selectedDelay;
 
-      // Show success
       const card = quoteForm.querySelector('.quote-card');
       if (card) {
         card.innerHTML = `
